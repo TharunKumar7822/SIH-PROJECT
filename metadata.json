@@ -1,0 +1,6 @@
+{
+  "name": "Component Burn-In AI Screening",
+  "description": "AI-driven dynamic anomaly detection, 168h drift prediction, safety slope analysis, and QA decision engine for high-reliability aerospace electronic component burn-in screening.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

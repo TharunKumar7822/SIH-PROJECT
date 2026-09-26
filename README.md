@@ -1,76 +1,145 @@
 # AI-Driven Anomaly Detection in Component Burn-In & Screening
 
-A production-oriented Environmental Stress Screening (ESS) & Burn-In predictive quality assurance system engineered for high-reliability aerospace, defense, and space applications.
+An AI/ML-based system designed to detect abnormal behavior in electronic components during **Burn-In and Environmental Stress Screening (ESS)**.
+
+The project focuses on identifying early signs of component degradation instead of relying only on fixed threshold limits.
 
 ---
 
-## 1. Problem Statement & Philosophy
+## 🎯 Problem
 
-Traditional electronic component screening relies on static datasheet thresholds (e.g., leakage current limit $\le 50\,\mu\text{A}$). Under this regime:
-- A unit with stable measurements of $10 \rightarrow 11 \rightarrow 12 \rightarrow 12\,\mu\text{A}$ **PASSES**.
-- A degraded unit drifting from $10 \rightarrow 18 \rightarrow 30 \rightarrow 45\,\mu\text{A}$ **PASSES** because it never crosses $50\,\mu\text{A}$.
+Traditional component testing often checks whether a measurement crosses a fixed limit.
 
-In space flight missions, dynamic drift is a symptom of progressive material degradation, package contamination, or dielectric breakdown.
+For example:
 
-**Core System Principle:**
-> *"Traditional ESS asks: 'Did the component exceed the allowed limit?' Our system asks: 'Is this component behaving abnormally compared with its lot, is its parameter drifting unusually over time, and is it likely to cross an unsafe trajectory?'"*
+```text
+Normal:       10 → 11 → 12 → 12
+Possible Risk: 10 → 18 → 30 → 45
 
----
+Both may be below a limit such as 50, but the second component is changing much faster.
 
-## 2. Mathematical Architecture
+This project aims to detect such unusual patterns and early drift before they become critical.
 
-### A. Lot-Aware Robust Normalization
-To prevent lot-to-lot baseline shifts from confounding anomaly detection, each lot $L_k$ is normalized using Median and Median Absolute Deviation (MAD):
+💡 Solution
 
-$$\text{MAD}_k = \text{median}\left(\left| x_i - \text{median}(X_k) \right|\right)$$
+The system combines:
 
-$$\text{Modified } Z\text{-Score} = \frac{0.6745 \cdot (x_i - \text{median}(X_k))}{\text{MAD}_k}$$
+Statistical analysis
+Anomaly detection
+Machine Learning
+Drift prediction
+Risk scoring
 
-### B. Module A: Hybrid Early Anomaly Detection
-Combines robust statistical deviation with Isolation Forest scoring on early features ($t = 0\text{h}, 24\text{h}$):
-- Early Drift Rate: $\text{Slope}_{0-24} = \frac{x_{24\text{h}} - x_{0\text{h}}}{24}$
-- Deviation from Lot Median: $\Delta_{\text{lot}} = x_{24\text{h}} - \text{median}_{L_k}(24\text{h})$
+It analyzes early measurements and compares them with historical component behavior to identify potentially abnormal components.
 
-### C. Module B: Anti-Leakage 168h Drift Predictor
-- **Strict Anti-Leakage Protocol:** Feature matrices strictly isolate $0\text{h}$ and $24\text{h}$ measurements. $96\text{h}$ and $168\text{h}$ measurements are **NEVER** accessible at inference time.
-- Compares Linear Ridge Regression, Random Forest, and Gradient Boosted Decision Trees; automatically deploys the model minimizing Mean Absolute Error (MAE).
+🔍 Key Features
+Detects unusual component behavior
+Performs lot-based data analysis
+Calculates early drift
+Uses Isolation Forest for anomaly detection
+Predicts future component behavior
+Generates a risk score
+Provides a web-based dashboard
+Includes a FastAPI backend
+Supports Docker deployment
+🧠 Machine Learning
 
-### D. Statistically Derived Safety Slope
-The maximum permissible drift rate is derived from the empirical upper percentile (e.g. 97.5th percentile or $Q_3 + 1.5 \times \text{IQR}$) of historical normal components:
+The project experiments with multiple ML techniques:
 
-$$\text{Boundary}(t) = x_{0\text{h}} + \text{Slope}_{\text{safe}} \times t$$
+Isolation Forest – anomaly detection
+Ridge Regression – drift prediction
+Random Forest – prediction
+Gradient Boosting – prediction
 
-### E. Composite Risk Engine
-Calibrates 5 configurable engineering weighting factors into a normalized score $[0, 100]$:
+The models use early-stage measurements to predict future behavior while avoiding the use of future data during prediction.
 
-$$\text{Risk Score} = w_1 S_{\text{stat}} + w_2 S_{\text{iforest}} + w_3 S_{\text{lot}} + w_4 S_{\text{early}} + w_5 S_{\text{predicted}}$$
+🏗️ System Flow
+Component Data
+      ↓
+Data Processing
+      ↓
+Feature Engineering
+      ↓
+Anomaly Detection
+      ↓
+Drift Prediction
+      ↓
+Risk Score
+      ↓
+Screening Decision
+🛠️ Tech Stack
 
----
+Frontend
 
-## 3. High-Recall Optimization
-In aerospace QA, **missing a defective component is catastrophic**. The decision threshold is calibrated for **zero false negatives (100% recall)**, safely accepting low false-positive rates for secondary QA review.
+React
+TypeScript
+Vite
 
----
+Backend
 
-## 4. Running the System
+Python
+FastAPI
 
-### Full-Stack Development
-```bash
-# Install frontend & server dependencies
+Machine Learning
+
+Scikit-learn
+Statistical Analysis
+Anomaly Detection
+Regression
+
+Tools
+
+Git
+GitHub
+Docker
+Docker Compose
+📁 Project Structure
+SIH-PROJECT/
+│
+├── backend/       # FastAPI backend
+├── src/           # Frontend application
+├── tests/         # Project tests
+├── docker-compose.yml
+├── package.json
+└── README.md
+🚀 Getting Started
+Frontend
 npm install
-
-# Start development server on port 3000
 npm run dev
-```
-
-### Backend FastApi Service
-```bash
+Backend
 cd backend
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
+Docker
+docker compose up --build
+📊 Project Results
 
-### Docker Deployment
-```bash
-docker-compose up --build
-```
+The project evaluates different Machine Learning models for anomaly detection and drift prediction.
+
+Model performance can be added here as experiments are completed.
+
+Model	MAE
+Ridge Regression	TBD
+Random Forest	TBD
+Gradient Boosting	TBD
+🔮 Future Improvements
+Real-time monitoring
+Better model calibration
+Explainable AI
+More component parameters
+Cloud deployment
+Automated model retraining
+Improved dashboards
+👨‍💻 Author
+
+Tharun Kumar
+
+Computer Science & Engineering Student
+
+Interested in:
+
+Machine Learning • Data Engineering • Artificial Intelligence
+
+GitHub
+
+⭐ If you find this project interesting, feel free to explore the repository.
